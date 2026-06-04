@@ -1,0 +1,8 @@
+POST http://localhost:8000/products
+Content-Type: application/json
+
+{
+  "name": "Nike Air Max 90",
+  "description": "Buty sportowe",
+  "category": "Obuwie"
+}
