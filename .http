@@ -6,3 +6,43 @@ Content-Type: application/json
   "description": "Buty sportowe",
   "category": "Obuwie"
 }
+
+###
+GET http://localhost:8000/products
+
+
+### Zdjecie 1 dla produktu 1
+POST http://localhost:8000/products/1/image
+Content-Type: multipart/form-data; boundary=----Boundary
+
+------Boundary
+Content-Disposition: form-data; name="file"; filename="1.jpg"
+Content-Type: image/jpeg
+
+< d:\Documents\1.jpg
+------Boundary--
+
+
+### Zdjecie 2 dla produktu 2
+POST http://localhost:8000/products/2/image
+Content-Type: multipart/form-data; boundary=----Boundary
+
+------Boundary
+Content-Disposition: form-data; name="file"; filename="2.jpg"
+Content-Type: image/jpeg
+
+< d:\Documents\2.jpg
+------Boundary--
+
+
+### Zdjecie 3 dla produktu 3
+POST http://localhost:8000/products/3/image
+Content-Type: multipart/form-data; boundary=----Boundary
+
+------Boundary
+Content-Disposition: form-data; name="file"; filename="3.jpg"
+Content-Type: image/jpeg
+
+< d:\Documents\3.jpg
+------Boundary--
+
