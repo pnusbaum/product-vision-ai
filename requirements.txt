@@ -1,8 +1,21 @@
+# API
 fastapi
 uvicorn[standard]
+
+# Baza danych
 sqlalchemy
 psycopg[binary]
 pgvector
+
+
+# Upload plików
 python-multipart
 pillow
+
+
+# OpenAI
 openai
+
+# Embeddingi obrazów
+sentence-transformers
+torch
