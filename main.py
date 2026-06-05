@@ -6,6 +6,7 @@ from database import engine
 import os
 import shutil
 from fastapi import UploadFile, File
+from services.embeddings import generate_image_embedding
 
 app = FastAPI()
 
@@ -89,3 +90,90 @@ def upload_product_image(product_id: int, file: UploadFile = File(...)):
             return {"error": "Product not found"}
 
         return dict(row)
+    
+    
+    
+@app.post("/products/{product_id}/generate-image-embedding")
+def generate_product_image_embedding(product_id: int):
+    with engine.begin() as conn:
+        result = conn.execute(
+            text("""
+                SELECT image_path
+                FROM products
+                WHERE id = :product_id
+            """),
+            {"product_id": product_id}
+        )
+
+        row = result.mappings().first()
+
+        if row is None:
+            return {"error": "Product not found"}
+
+        if row["image_path"] is None:
+            return {"error": "Product has no image"}
+
+        embedding = generate_image_embedding(row["image_path"])
+
+        
+        conn.execute(
+            text("""
+                UPDATE products
+                SET image_embedding = :embedding
+                WHERE id = :product_id
+            """),
+            {
+                "embedding": embedding,
+                "product_id": product_id
+            }
+        )
+
+        return {
+            "product_id": product_id,
+            "embedding_size": len(embedding),
+            "status": "image embedding generated"
+        }
+        
+@app.get("/products/{product_id}/similar")
+def find_similar_products(product_id: int, limit: int = 5):
+    with engine.connect() as conn:
+
+        result = conn.execute(
+            text("""
+                SELECT image_embedding
+                FROM products
+                WHERE id = :product_id
+            """),
+            {"product_id": product_id}
+        )
+
+        source = result.mappings().first()
+
+        if source is None:
+            return {"error": "Product not found"}
+
+        if source["image_embedding"] is None:
+            return {"error": "Product has no embedding"}
+
+        result = conn.execute(
+            text("""
+                SELECT
+                    id,
+                    name,
+                    category,
+                    image_path,
+                    image_embedding <=> :embedding AS distance
+                FROM products
+                WHERE id <> :product_id
+                AND image_embedding IS NOT NULL
+                ORDER BY image_embedding <=> :embedding
+                LIMIT :limit
+            """),
+            {
+                "embedding": source["image_embedding"],
+                "product_id": product_id,
+                "limit": limit
+            }
+        )
+
+        return [dict(row) for row in result.mappings()]

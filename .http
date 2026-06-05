@@ -46,3 +46,15 @@ Content-Type: image/jpeg
 < d:\Documents\3.jpg
 ------Boundary--
 
+### Obliczenie embeddingu dla produktu 1
+POST http://localhost:8000/products/1/generate-image-embedding
+### Obliczenie embeddingu dla produktu 2
+POST http://localhost:8000/products/2/generate-image-embedding
+
+### Obliczenie embeddingu dla produktu 3
+POST http://localhost:8000/products/3/generate-image-embedding
+
+### Znajdowanie podobnych produktów do produktu 1
+GET http://localhost:8000/products/1/similar
+
+

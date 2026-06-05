@@ -19,3 +19,11 @@ openai
 # Embeddingi obrazów
 sentence-transformers
 torch
+
+
+# Zaladowanie informacji o produktach z systemu zrodlowego
+python-dotenv
+pymssql
+
+# Pobieranie obrazów z internetu
+requests

@@ -1,2 +1,3 @@
-#dodaj zawartosc folderu uploads
+.env
 uploads/
+__pycache__/
