@@ -177,3 +177,41 @@ def find_similar_products(product_id: int, limit: int = 5):
         )
 
         return [dict(row) for row in result.mappings()]
+    
+@app.post("/search-by-image")
+def search_by_image(file: UploadFile = File(...), limit: int = 5):
+    print(f"Otrzymano zapytanie o podobne produkty dla przesłanego obrazu: {file.filename}")
+
+    os.makedirs("uploads/search", exist_ok=True)
+
+    temp_path = f"uploads/search/{file.filename}"
+
+    with open(temp_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    query_embedding = generate_image_embedding(temp_path)
+
+    embedding_str = "[" + ",".join(str(x) for x in query_embedding) + "]"
+
+    with engine.connect() as conn:
+        result = conn.execute(
+            text("""
+                SELECT
+                    id,
+                    name,
+                    image_path,
+                    category,
+                    image_embedding <=> CAST(:embedding AS vector) AS distance
+                FROM products
+                WHERE image_embedding IS NOT NULL
+                ORDER BY image_embedding <=> CAST(:embedding AS vector)
+                LIMIT :limit
+            """),
+            {
+                "embedding": embedding_str,
+                "limit": limit,
+            }
+        )
+
+        return [dict(row) for row in result.mappings()]
+    
