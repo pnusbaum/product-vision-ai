@@ -5,6 +5,7 @@ uvicorn[standard]
 # Baza danych
 sqlalchemy
 psycopg[binary]
+psycopg2-binary
 pgvector
 
 
