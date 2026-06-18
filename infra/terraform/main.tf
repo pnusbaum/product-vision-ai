@@ -25,15 +25,22 @@ resource "google_cloud_run_v2_service" "product_api" {
   location            = var.region
   deletion_protection = false
   template {
-    containers {
-      image = "europe-central2-docker.pkg.dev/${var.project_id}/docker-images/product-api:latest"
+    containers {      
+      image = "europe-central2-docker.pkg.dev/${var.project_id}/docker-images/product-api:v1"      
 
+      resources {
+        limits = {
+          cpu    = "2"
+          memory = "4Gi"
+        }
+      }
       env {
         name  = "DATABASE_URL"
         value = "postgresql+psycopg://dummy:dummy@localhost:5432/dummy"
       }
 
-    }
+    }    
+    timeout = "300s"
   }
 
   depends_on = [
