@@ -271,3 +271,4 @@ def search_by_text(request: TextSearchRequest, limit: int = 5):
         )
 
         return map_products_with_image_urls(result.mappings())
+    

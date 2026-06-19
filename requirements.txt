@@ -27,4 +27,5 @@ python-dotenv
 pymssql
 
 # Pobieranie obrazów z internetu
+streamlit
 requests

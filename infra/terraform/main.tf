@@ -74,7 +74,7 @@ resource "google_sql_database_instance" "postgres" {
   database_version = "POSTGRES_16"
 
   settings {
-    tier = "db-f1-micro"
+    tier    = "db-f1-micro"
     edition = "ENTERPRISE"
 
     disk_size = 20
@@ -113,5 +113,36 @@ resource "google_storage_bucket" "product_images" {
 resource "google_storage_bucket_iam_member" "product_images_public" {
   bucket = google_storage_bucket.product_images.name
   role   = "roles/storage.objectViewer"
+  member = "allUsers"
+}
+
+resource "google_cloud_run_v2_service" "product_streamlit" {
+  name                = "product-streamlit"
+  location            = var.region
+  deletion_protection = false
+
+  template {
+    containers {
+      image = "europe-central2-docker.pkg.dev/${var.project_id}/docker-images/product-streamlit:v2"
+
+      resources {
+        limits = {
+          cpu    = "1"
+          memory = "512Mi"
+        }
+      }
+    }
+  }
+
+  depends_on = [
+    google_project_service.services
+  ]
+}
+
+resource "google_cloud_run_v2_service_iam_member" "streamlit_public" {
+  location = google_cloud_run_v2_service.product_streamlit.location
+  name     = google_cloud_run_v2_service.product_streamlit.name
+
+  role   = "roles/run.invoker"
   member = "allUsers"
 }
