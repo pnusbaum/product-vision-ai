@@ -25,8 +25,16 @@ resource "google_cloud_run_v2_service" "product_api" {
   location            = var.region
   deletion_protection = false
   template {
-    containers {      
-      image = "europe-central2-docker.pkg.dev/${var.project_id}/docker-images/product-api:v1"      
+    volumes {
+      name = "cloudsql"
+
+      cloud_sql_instance {
+        instances = [google_sql_database_instance.postgres.connection_name]
+      }
+    }
+
+    containers {
+      image = "europe-central2-docker.pkg.dev/${var.project_id}/docker-images/product-api:v1"
 
       resources {
         limits = {
@@ -34,13 +42,17 @@ resource "google_cloud_run_v2_service" "product_api" {
           memory = "4Gi"
         }
       }
-      env {
-        name  = "DATABASE_URL"
-        value = "postgresql+psycopg://dummy:dummy@localhost:5432/dummy"
+
+      volume_mounts {
+        name       = "cloudsql"
+        mount_path = "/cloudsql"
       }
 
-    }    
-    timeout = "300s"
+      env {
+        name  = "DATABASE_URL"
+        value = "postgresql+psycopg://app:NoweProsteHaslo12345@/products_db?host=/cloudsql/${google_sql_database_instance.postgres.connection_name}"
+      }
+    }
   }
 
   depends_on = [
@@ -54,4 +66,31 @@ resource "google_cloud_run_v2_service_iam_member" "public" {
 
   role   = "roles/run.invoker"
   member = "allUsers"
+}
+
+resource "google_sql_database_instance" "postgres" {
+  name             = "products-db"
+  region           = var.region
+  database_version = "POSTGRES_16"
+
+  settings {
+    tier = "db-f1-micro"
+    edition = "ENTERPRISE"
+
+    disk_size = 20
+    disk_type = "PD_SSD"
+  }
+
+  deletion_protection = false
+}
+
+resource "google_sql_database" "app_db" {
+  name     = "products_db"
+  instance = google_sql_database_instance.postgres.name
+}
+
+resource "google_sql_user" "app_user" {
+  name     = "app"
+  instance = google_sql_database_instance.postgres.name
+  password = "NoweProsteHaslo12345"
 }
