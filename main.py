@@ -19,9 +19,32 @@ class ProductCreate(BaseModel):
     description: str | None = None
     category: str | None = None
     
+GCS_PUBLIC_BASE_URL = "https://storage.googleapis.com/mineral-seat-498521-p0-product-images"
+
+def build_image_url(relative_path: str | None) -> str | None:
+    if not relative_path:
+        return None
+
+    normalized = relative_path.replace("\\", "/")
+
+    if normalized.startswith("uploads/"):
+        normalized = normalized.replace("uploads/", "product-images/", 1)
+
+    return f"{GCS_PUBLIC_BASE_URL}/{normalized}"
+
+def map_products_with_image_urls(rows):
+    products = []
+
+    for row in rows:
+        product = dict(row)
+        product["image_url"] = build_image_url(product.get("image_path"))
+        products.append(product)
+
+    return products
+
 @app.get("/")
 def root():
-    return {"status": "API działa"}
+    return {"status": "API działa v3"}
     
 @app.get("/db-test")
 def db_test():
@@ -56,13 +79,14 @@ def get_products():
                     name,
                     description,
                     category,
-                    created_at
+                    created_at,
+                    image_path
                 FROM products
                 ORDER BY id
             """)
         )
 
-        return [dict(row) for row in result.mappings()]
+        return map_products_with_image_urls(result.mappings())
             
 @app.post("/products/{product_id}/image")
 def upload_product_image(product_id: int, file: UploadFile = File(...)):
@@ -180,7 +204,7 @@ def find_similar_products(product_id: int, limit: int = 5):
             }
         )
 
-        return [dict(row) for row in result.mappings()]
+        return map_products_with_image_urls(result.mappings())
     
 @app.post("/search-by-image")
 def search_by_image(file: UploadFile = File(...), limit: int = 5):
@@ -217,8 +241,7 @@ def search_by_image(file: UploadFile = File(...), limit: int = 5):
             }
         )
 
-        return [dict(row) for row in result.mappings()]
-    
+    return map_products_with_image_urls(result.mappings())
     
 
 @app.post("/search-by-text")
@@ -247,4 +270,4 @@ def search_by_text(request: TextSearchRequest, limit: int = 5):
             }
         )
 
-        return [dict(row) for row in result.mappings()]
+        return map_products_with_image_urls(result.mappings())

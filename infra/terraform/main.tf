@@ -34,7 +34,7 @@ resource "google_cloud_run_v2_service" "product_api" {
     }
 
     containers {
-      image = "europe-central2-docker.pkg.dev/${var.project_id}/docker-images/product-api:v1"
+      image = "europe-central2-docker.pkg.dev/${var.project_id}/docker-images/product-api:v3"
 
       resources {
         limits = {
@@ -93,4 +93,25 @@ resource "google_sql_user" "app_user" {
   name     = "app"
   instance = google_sql_database_instance.postgres.name
   password = "NoweProsteHaslo12345"
+}
+
+resource "google_storage_bucket" "product_images" {
+  name     = "${var.project_id}-product-images"
+  location = var.region
+
+  uniform_bucket_level_access = true
+
+  lifecycle_rule {
+    condition {
+      age = 30
+    }
+    action {
+      type = "AbortIncompleteMultipartUpload"
+    }
+  }
+}
+resource "google_storage_bucket_iam_member" "product_images_public" {
+  bucket = google_storage_bucket.product_images.name
+  role   = "roles/storage.objectViewer"
+  member = "allUsers"
 }
