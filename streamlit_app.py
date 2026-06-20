@@ -2,8 +2,9 @@ import os
 import streamlit as st
 import requests
 
-API_URL = "https://product-api-847285464691.europe-central2.run.app"
+IMAGE_SEARCH_API_URL = "http://localhost:8000"
 PRODUCT_DESCRIPTION_API_URL = "http://localhost:8081/generate-product-description"
+
 
 st.set_page_config(page_title="Product Vision AI", layout="wide")
 
@@ -119,7 +120,7 @@ def render_image_search_tab():
             }
 
             response = requests.post(
-                f"{API_URL}/search-by-image?limit={limit}",
+                f"{IMAGE_SEARCH_API_URL}/search-by-image?limit={limit}",
                 files=files,
             )
 
@@ -135,7 +136,7 @@ def render_image_search_tab():
 
         if query and st.button("Szukaj po tekście"):
             response = requests.post(
-                f"{API_URL}/search-by-text?limit={limit}",
+                f"{IMAGE_SEARCH_API_URL}/search-by-text?limit={limit}",
                 json={"query": query},
             )
 
