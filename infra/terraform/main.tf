@@ -50,7 +50,7 @@ resource "google_cloud_run_v2_service" "product_api" {
 
       env {
         name  = "DATABASE_URL"
-        value = "postgresql+psycopg://app:NoweProsteHaslo12345@/products_db?host=/cloudsql/${google_sql_database_instance.postgres.connection_name}"
+        value = "postgresql+psycopg://app:${var.db_password}@/products_db?host=/cloudsql/${google_sql_database_instance.postgres.connection_name}"
       }
     }
   }
@@ -92,7 +92,7 @@ resource "google_sql_database" "app_db" {
 resource "google_sql_user" "app_user" {
   name     = "app"
   instance = google_sql_database_instance.postgres.name
-  password = "NoweProsteHaslo12345"
+  password = var.db_password
 }
 
 resource "google_storage_bucket" "product_images" {
@@ -131,6 +131,16 @@ resource "google_cloud_run_v2_service" "product_streamlit" {
           memory = "512Mi"
         }
       }
+      
+      env {
+        name  = "IMAGE_SEARCH_API_URL"
+        value = google_cloud_run_v2_service.product_api.uri
+      }
+
+      env {
+        name  = "PRODUCT_DESCRIPTION_API_URL"
+        value = "${google_cloud_run_v2_service.product_description_api.uri}/generate-product-description"
+      }
     }
   }
 
@@ -142,6 +152,47 @@ resource "google_cloud_run_v2_service" "product_streamlit" {
 resource "google_cloud_run_v2_service_iam_member" "streamlit_public" {
   location = google_cloud_run_v2_service.product_streamlit.location
   name     = google_cloud_run_v2_service.product_streamlit.name
+
+  role   = "roles/run.invoker"
+  member = "allUsers"
+}
+
+resource "google_cloud_run_v2_service" "product_description_api" {
+  name                = "product-description-api"
+  location            = var.region
+  deletion_protection = false
+
+  template {
+    containers {
+      image = "europe-central2-docker.pkg.dev/${var.project_id}/docker-images/product-description-api:v1"
+
+      resources {
+        limits = {
+          cpu    = "1"
+          memory = "512Mi"
+        }
+      }
+
+      env {
+        name  = "OPENAI_API_KEY"
+        value = var.openai_api_key
+      }
+
+      env {
+        name  = "OPENAI_MODEL"
+        value = "gpt-4o"
+      }
+    }
+  }
+
+  depends_on = [
+    google_project_service.services
+  ]
+}
+
+resource "google_cloud_run_v2_service_iam_member" "product_description_api_public" {
+  location = google_cloud_run_v2_service.product_description_api.location
+  name     = google_cloud_run_v2_service.product_description_api.name
 
   role   = "roles/run.invoker"
   member = "allUsers"

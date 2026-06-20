@@ -17,3 +17,8 @@ image-search-api          http://localhost:8000
 product-description-api  http://localhost:8081
 adminer                  http://localhost:8080
 postgres                 localhost:5432
+
+
+# config
+
+projectID gcp:          mineral-seat-498521-p0

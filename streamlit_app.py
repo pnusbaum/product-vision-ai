@@ -2,8 +2,16 @@ import os
 import streamlit as st
 import requests
 
-IMAGE_SEARCH_API_URL = "http://localhost:8000"
-PRODUCT_DESCRIPTION_API_URL = "http://localhost:8081/generate-product-description"
+
+IMAGE_SEARCH_API_URL = os.getenv(
+    "IMAGE_SEARCH_API_URL",
+    "http://localhost:8000"
+)
+
+PRODUCT_DESCRIPTION_API_URL = os.getenv(
+    "PRODUCT_DESCRIPTION_API_URL",
+    "http://localhost:8081/generate-product-description"
+)
 
 
 st.set_page_config(page_title="Product Vision AI", layout="wide")
