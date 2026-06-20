@@ -1,6 +1,10 @@
-.env
-uploads/
+venv/
 __pycache__/
+*.pyc
+.env
+.idea/
+.vscode/
+uploads/
 
 
 # Terraform

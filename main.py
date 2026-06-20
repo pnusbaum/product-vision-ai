@@ -44,7 +44,7 @@ def map_products_with_image_urls(rows):
 
 @app.get("/")
 def root():
-    return {"status": "API działa v3"}
+    return {"status": "API Image comparer is working v3"}
     
 @app.get("/db-test")
 def db_test():
