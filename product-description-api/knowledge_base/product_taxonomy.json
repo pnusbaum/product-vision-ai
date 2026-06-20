@@ -1,0 +1,38 @@
+{
+  "buty": [
+    "sneakersy",
+    "buty sportowe",
+    "sandały",
+    "klapki",
+    "botki",
+    "kozaki",
+    "półbuty"
+  ],
+  "koszulki": [
+    "t-shirt",
+    "polo",
+    "top",
+    "longsleeve"
+  ],
+  "kurtki": [
+    "kurtka zimowa",
+    "kurtka przejściowa",
+    "ramoneska",
+    "parka",
+    "softshell"
+  ],
+  "spodnie": [
+    "jeansy",
+    "chinosy",
+    "dresowe",
+    "legginsy",
+    "szorty"
+  ],
+  "garnki": [
+    "garnek stalowy",
+    "rondel",
+    "patelnia",
+    "brytfanna",
+    "zestaw garnków"
+  ]
+}
