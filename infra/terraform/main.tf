@@ -122,9 +122,8 @@ resource "google_cloud_run_v2_service" "product_streamlit" {
   deletion_protection = false
 
   template {
-    containers {
-      image = "europe-central2-docker.pkg.dev/${var.project_id}/docker-images/product-streamlit:v2"
-
+    containers {      
+      image = "europe-central2-docker.pkg.dev/${var.project_id}/docker-images/product-streamlit:v4"
       resources {
         limits = {
           cpu    = "1"
