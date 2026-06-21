@@ -34,7 +34,7 @@ resource "google_cloud_run_v2_service" "product_api" {
     }
 
     containers {
-      image = "europe-central2-docker.pkg.dev/${var.project_id}/docker-images/product-api:v3"
+      image = "europe-central2-docker.pkg.dev/${var.project_id}/docker-images/product-api:v4"
 
       resources {
         limits = {
@@ -122,15 +122,15 @@ resource "google_cloud_run_v2_service" "product_streamlit" {
   deletion_protection = false
 
   template {
-    containers {      
-      image = "europe-central2-docker.pkg.dev/${var.project_id}/docker-images/product-streamlit:v4"
+    containers {
+      image = "europe-central2-docker.pkg.dev/${var.project_id}/docker-images/product-streamlit:v5"
       resources {
         limits = {
           cpu    = "1"
           memory = "512Mi"
         }
       }
-      
+
       env {
         name  = "IMAGE_SEARCH_API_URL"
         value = google_cloud_run_v2_service.product_api.uri
@@ -163,7 +163,7 @@ resource "google_cloud_run_v2_service" "product_description_api" {
 
   template {
     containers {
-      image = "europe-central2-docker.pkg.dev/${var.project_id}/docker-images/product-description-api:v1"
+      image = "europe-central2-docker.pkg.dev/${var.project_id}/docker-images/product-description-api:v2"
 
       resources {
         limits = {
