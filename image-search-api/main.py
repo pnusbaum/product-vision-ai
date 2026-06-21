@@ -9,7 +9,7 @@ from fastapi import UploadFile, File
 from services.embeddings import generate_image_embedding
 from services.embeddings import generate_text_embedding
 
-app = FastAPI()
+app = FastAPI(title="Image Search & Product Description API")
 
 class TextSearchRequest(BaseModel):
     query: str

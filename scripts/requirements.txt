@@ -1,0 +1,6 @@
+# Zaladowanie informacji o produktach z systemu zrodlowego
+python-dotenv
+pymssql
+
+# Pobieranie obrazów z internetu
+requests

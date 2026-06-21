@@ -1,0 +1,4 @@
+
+# Pobieranie obrazów z internetu
+streamlit
+requests

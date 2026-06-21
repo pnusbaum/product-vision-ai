@@ -8,10 +8,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(BASE_DIR))
 
 from database import engine
-from services.embeddings import generate_image_embedding
+from image-search-api.services.embeddings import generate_image_embedding
 
 
-UPLOADS_DIR = BASE_DIR / "uploads"
+UPLOADS_DIR = BASE_DIR / "image-search-api/uploads"
 UPLOADS_DIR.mkdir(exist_ok=True)
 
 

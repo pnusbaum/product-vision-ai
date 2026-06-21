@@ -17,21 +17,21 @@ services:
 
   image-search-api:
     build:
-      context: .
+      context: ./image-search-api
       dockerfile: Dockerfile
     container_name: image_search_api
     restart: unless-stopped
     depends_on:
       - postgres
     env_file:
-      - .env
+      - ./image-search-api/.env
     environment:
       DATABASE_URL: postgresql+psycopg://app:app@postgres:5432/products_db
       OPENAI_API_KEY: ${OPENAI_API_KEY}
     ports:
       - "8000:8000"
     volumes:
-      - ./uploads:/app/uploads
+      - ./image-search-api/uploads:/app/uploads
 
   product-description-api:
     build:
@@ -43,7 +43,22 @@ services:
       - ./product-description-api/.env
     ports:
       - "8081:8080"
+  streamlit:
+    build:
+      context: ./streamlit-app
+      dockerfile: Dockerfile
+    container_name: product_streamlit
+    restart: unless-stopped
+    ports:
+      - "8501:8080"
+    environment:
+      IMAGE_SEARCH_API_URL: http://image-search-api:8000
+      PRODUCT_DESCRIPTION_API_URL: http://product-description-api:8080/generate-product-description
+    depends_on:
+      - image-search-api
+      - product-description-api
 
+      
   adminer:
     image: adminer
     container_name: products_adminer
